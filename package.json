@@ -1,0 +1,26 @@
+{
+  "name": "email-sender",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "multer": "^2.0.1",
+    "mysql2": "^3.14.1",
+    "nodemailer": "^7.0.4",
+    "nodemon": "^3.0.1",
+    "sequelize": "^6.37.7",
+     "mongoose": "^8.0.0"
+  }
+}
