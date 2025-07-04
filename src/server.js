@@ -8,9 +8,8 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: 'https://friendly-job-form-wizard.lovable.app', // Allow only your frontend
+  origin: '*', // Allow only your frontend
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, // Allow cookies/auth headers if needed
   optionsSuccessStatus: 204,
 };
 app.use(cors(corsOptions));
