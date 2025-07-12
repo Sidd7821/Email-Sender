@@ -29,7 +29,7 @@ const upload = multer({
 // POST /api/apply
 router.post('/', upload.single('resume'), async (req, res) => {
   try {
-    const { name, email, coverLetter,emailSubject, resumeBase64, resumeFileName, smtpEmail, smtpPassword,companyEmail } = req.body;
+    const { name, email, coverLetter, emailSubject, resumeBase64, resumeFileName, smtpEmail, smtpPassword, companyEmail } = req.body;
 
     console.log(req.body);
 
@@ -39,6 +39,9 @@ router.post('/', upload.single('resume'), async (req, res) => {
     }
     if (!smtpEmail || !smtpPassword) {
       return res.status(400).json({ message: 'SMTP email and password are required' });
+    }
+    if (!companyEmail || !Array.isArray(companyEmail) || companyEmail.length === 0) {
+      return res.status(400).json({ message: 'At least one company email is required' });
     }
 
     let resumePath;
@@ -79,13 +82,32 @@ router.post('/', upload.single('resume'), async (req, res) => {
       resumePath,
     });
 
-    // Send email with provided SMTP credentials
-    const emailResult = await sendApplicationEmail(applicant, resumePath, smtpEmail, smtpPassword,emailSubject, companyEmail, name);
-    if (!emailResult.success) {
-      return res.status(500).json({ message: emailResult.message });
+    // Send email to multiple recipients
+    const emailResults = await Promise.all(
+      companyEmail.map(async (recipientEmail) => {
+        const emailResult = await sendApplicationEmail(
+          applicant,
+          resumePath,
+          smtpEmail,
+          smtpPassword,
+          emailSubject,
+          recipientEmail,
+          name
+        );
+        return emailResult;
+      })
+    );
+
+    // Check if any email failed to send
+    const failedEmails = emailResults.filter(result => !result.success);
+    if (failedEmails.length > 0) {
+      return res.status(500).json({ 
+        message: 'Some emails failed to send', 
+        errors: failedEmails.map(e => e.message) 
+      });
     }
 
-    res.status(200).json({ message: 'Application submitted successfully' });
+    res.status(200).json({ message: 'Application submitted successfully to all recipients' });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Server error' });
