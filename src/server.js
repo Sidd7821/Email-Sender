@@ -6,13 +6,34 @@ const path = require('path');
 
 const app = express();
 
-// CORS configuration
-const corsOptions = {
-  origin: '*', // Allow only your frontend
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  optionsSuccessStatus: 204,
-};
-app.use(cors(corsOptions));
+// // CORS configuration
+// const corsOptions = {
+//   origin: '*', // Allow only your frontend
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   optionsSuccessStatus: 204,
+// };
+// app.use(cors(corsOptions));
+
+
+// Simplified CORS configuration to allow all requests
+app.use(cors({
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'OPTIONS'], // Explicitly allow necessary methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
+    optionsSuccessStatus: 204, // Standard status for OPTIONS
+  }));
+  
+  // Debug middleware to log incoming requests
+  app.use((req, res, next) => {
+    console.log(`Request: ${req.method} ${req.url} from ${req.headers.origin}`);
+    next();
+  });
+  
+  // Explicitly handle OPTIONS requests for /api/apply
+  app.options('/api/apply', cors(), (req, res) => {
+    console.log('Handling OPTIONS request for /api/apply');
+    res.status(204).send();
+  });
 
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
