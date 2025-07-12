@@ -29,7 +29,7 @@ const upload = multer({
 // POST /api/apply
 router.post('/', upload.single('resume'), async (req, res) => {
   try {
-    const { name, email, coverLetter, emailSubject, resumeBase64, resumeFileName, smtpEmail, smtpPassword, companyEmail } = req.body;
+    const { name, email, coverLetter, emailSubject, resumeBase64, resumeFileName, smtpEmail, smtpPassword, companyEmails } = req.body;
 
     console.log(req.body);
 
@@ -40,7 +40,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
     if (!smtpEmail || !smtpPassword) {
       return res.status(400).json({ message: 'SMTP email and password are required' });
     }
-    if (!companyEmail || !Array.isArray(companyEmail) || companyEmail.length === 0) {
+    if (!companyEmails || !Array.isArray(companyEmails) || companyEmails.length === 0) {
       return res.status(400).json({ message: 'At least one company email is required' });
     }
 
@@ -84,7 +84,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
 
     // Send email to multiple recipients
     const emailResults = await Promise.all(
-      companyEmail.map(async (recipientEmail) => {
+      companyEmails.map(async (recipientEmail) => {
         const emailResult = await sendApplicationEmail(
           applicant,
           resumePath,
