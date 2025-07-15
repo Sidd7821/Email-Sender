@@ -23,7 +23,7 @@ const upload = multer({
     }
     cb(null, true);
   },
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 100 * 1024 * 1024 }, // 10MB limit
 });
 
 // POST /api/apply
@@ -58,7 +58,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
       }
 
       // Validate file size (5MB limit)
-      if (buffer.length > 10 * 1024 * 1024) {
+      if (buffer.length > 100 * 1024 * 1024) {
         return res.status(400).json({ message: 'Resume file size exceeds 10MB limit' });
       }
 
