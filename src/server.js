@@ -1,8 +1,9 @@
-const express = require('express');
-const connectDB = require('./config/database');
-const applyRoutes = require('./routes/apply');
-const cors = require('cors');
-const path = require('path');
+const express = require("express");
+const connectDB = require("./config/database");
+const applyRoutes = require("./routes/apply");
+const emailRoutes = require("./routes/emails");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
@@ -14,37 +15,44 @@ const app = express();
 // };
 // app.use(cors(corsOptions));
 
-
 // Simplified CORS configuration to allow all requests
-app.use(cors({
-    origin: '*', // Allow all origins
-    methods: ['GET', 'POST', 'OPTIONS'], // Explicitly allow necessary methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
-    optionsSuccessStatus: 204, // Standard status for OPTIONS
-  }));
-  
-  // Debug middleware to log incoming requests
-  app.use((req, res, next) => {
-    console.log(`Request: ${req.method} ${req.url} from ${req.headers.origin}`);
-    next();
-  });
-  
-  // Explicitly handle OPTIONS requests for /api/apply
-  app.options('/api/apply', cors(), (req, res) => {
-    console.log('Handling OPTIONS request for /api/apply');
-    res.status(204).send();
-  });
+app.use(
+    cors({
+        origin: "*", // Allow all origins
+        methods: ["GET", "POST", "OPTIONS"], // Explicitly allow necessary methods
+        allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
+        optionsSuccessStatus: 204, // Standard status for OPTIONS
+    })
+);
 
+// Debug middleware to log incoming requests
+//   app.use((req, res, next) => {
+//     console.log(`Request: ${req.method} ${req.url} from ${req.headers.origin}`);
+//     next();
+//   });
+
+// Explicitly handle OPTIONS requests for /api/apply
+app.options("/api/apply", cors(), (req, res) => {
+    console.log("Handling OPTIONS request for /api/apply");
+    res.status(204).send();
+});
+
+<<<<<<< Updated upstream
 app.use(express.json({limit : '50mb'}));
 app.use(express.urlencoded({ limit: '50mb', extended: true}));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+=======
+app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+>>>>>>> Stashed changes
 
 // Routes
-app.use('/api/apply', applyRoutes);
+app.use("/api/apply", applyRoutes);
+app.use('/api/emails', emailRoutes);
 
 // Serve HTML status page for root route
-app.get('/', (req, res) => {
-  const htmlContent = `
+app.get("/", (req, res) => {
+    const htmlContent = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -204,11 +212,15 @@ app.get('/', (req, res) => {
                 </div>
                 <div class="info-card">
                     <div class="info-label">Environment</div>
-                    <div class="info-value">${process.env.NODE_ENV || 'Development'}</div>
+                    <div class="info-value">${
+                        process.env.NODE_ENV || "Development"
+                    }</div>
                 </div>
                 <div class="info-card">
                     <div class="info-label">Uptime</div>
-                    <div class="info-value" id="uptime">${Math.floor(process.uptime())}s</div>
+                    <div class="info-value" id="uptime">${Math.floor(
+                        process.uptime()
+                    )}s</div>
                 </div>
             </div>
             
@@ -242,24 +254,24 @@ app.get('/', (req, res) => {
     </body>
     </html>
   `;
-  
-  res.send(htmlContent);
+
+    res.send(htmlContent);
 });
 
 // Optional: Add uptime API endpoint
-app.get('/api/uptime', (req, res) => {
-  res.json({ 
-    uptime: process.uptime(),
-    status: 'running',
-    timestamp: new Date().toISOString()
-  });
+app.get("/api/uptime", (req, res) => {
+    res.json({
+        uptime: process.uptime(),
+        status: "running",
+        timestamp: new Date().toISOString(),
+    });
 });
 
 // Initialize database and start server
 const PORT = process.env.PORT || 3000;
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Visit http://localhost:${PORT} to see the status page`);
-  });
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        console.log(`Visit http://localhost:${PORT} to see the status page`);
+    });
 });
