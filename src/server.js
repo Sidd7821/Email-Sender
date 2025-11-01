@@ -223,6 +223,7 @@ app.get("/", (req, res) => {
                 <h3>Available Endpoints</h3>
                 <div class="endpoint">GET / - Server Status Page</div>
                 <div class="endpoint">POST /api/apply - Submit Job Application</div>
+                <div class="endpoint">POST /api/send - Get List of Email</div>
                 <div class="endpoint">GET /uploads/* - Static File Access</div>
             </div>
             

@@ -46,7 +46,7 @@ const nodemailer = require('nodemailer');
 const sendApplicationEmail = async (applicant, resumePath, smtpEmail, smtpPassword,emailSubject,companyEmail,name) => {
   // Create a new transporter for each email with provided credentials
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+     host: 'smtp.gmail.com',
     port: 587,
     secure: false, // Use TLS
     auth: {
@@ -54,7 +54,7 @@ const sendApplicationEmail = async (applicant, resumePath, smtpEmail, smtpPasswo
       pass: smtpPassword,
     },
     tls: {
-      rejectUnauthorized: true,
+      rejectUnauthorized: true, // Allow self-signed certificates
     },
   });
 
