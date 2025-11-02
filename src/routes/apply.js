@@ -101,9 +101,9 @@ router.post('/', upload.single('resume'), async (req, res) => {
     // Check if any email failed to send
     const failedEmails = emailResults.filter(result => !result.success);
     if (failedEmails.length > 0) {
-      return res.status(500).json({ 
-        message: 'Some emails failed to send', 
-        errors: failedEmails.map(e => e.message) 
+      return res.status(500).json({
+        message: 'Some emails failed to send',
+        errors: failedEmails.map(e => e.message)
       });
     }
 

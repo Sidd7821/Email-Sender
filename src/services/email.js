@@ -43,19 +43,19 @@
 
 const nodemailer = require('nodemailer');
 
-const sendApplicationEmail = async (applicant, resumePath, smtpEmail, smtpPassword,emailSubject,companyEmail,name) => {
+const sendApplicationEmail = async (applicant, resumePath, smtpEmail, smtpPassword, emailSubject, companyEmail, name) => {
   // Create a new transporter for each email with provided credentials
   const transporter = nodemailer.createTransport({
-     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use TLS
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
       user: smtpEmail,
       pass: smtpPassword,
     },
-    tls: {
-      rejectUnauthorized: true, // Allow self-signed certificates
-    },
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
   });
 
   const mailOptions = {
@@ -72,11 +72,30 @@ const sendApplicationEmail = async (applicant, resumePath, smtpEmail, smtpPasswo
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    // Verify connection first
+    await transporter.verify();
+    console.log('SMTP connection verified successfully');
+    
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', info.messageId);
     return { success: true, message: 'Email sent successfully' };
   } catch (error) {
     console.error('Email error:', error);
-    return { success: false, message: `Failed to send email: ${error.message}` };
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to send email';
+    if (error.code === 'ETIMEDOUT') {
+      errorMessage = 'Connection timeout - Check if port 465 is allowed on your server';
+    } else if (error.code === 'EAUTH') {
+      errorMessage = 'Authentication failed - Check your email and app password';
+    } else if (error.code === 'ECONNECTION') {
+      errorMessage = 'Cannot connect to SMTP server';
+    } else {
+      errorMessage = `Failed to send email: ${error.message}`;
+    }
+    
+    return { success: false, message: errorMessage };
   }
 };
 
